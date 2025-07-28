@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Islamic Car Finance Calculator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #f5f5f5;
+            color: #333;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: #2c5aa0;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 1.2em;
+            font-weight: 600;
+        }
+
+        .form-section {
+            padding: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .form-group select, .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            background: white;
+        }
+
+        .form-group select:focus, .form-group input:focus {
+            outline: none;
+            border-color: #2c5aa0;
+            box-shadow: 0 0 0 2px rgba(44, 90, 160, 0.1);
+        }
+
+        .vehicle-selector {
+            position: relative;
+        }
+
+        .add-vehicle-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+            margin-top: 5px;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .add-vehicle-btn:hover {
+            background: #218838;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 15% auto;
+            padding: 20px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .modal-header h3 {
+            color: #2c5aa0;
+            margin: 0;
+        }
+
+        .close {
+            color: #aaa;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .close:hover {
+            color: #000;
+        }
+
+        .modal-form-group {
+            margin-bottom: 15px;
+        }
+
+        .modal-form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .modal-form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .btn-primary {
+            background: #2c5aa0;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #1e3d6f;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #545b62;
+        }
+
+        .calculate-btn {
+            width: 100%;
+            background: #2c5aa0;
+            color: white;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin: 20px 0;
+        }
+
+        .calculate-btn:hover {
+            background: #1e3d6f;
+        }
+
+        .calculate-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .results-section {
+            display: none;
+            background: #f8f9fa;
+            padding: 20px;
+            margin-top: 10px;
+        }
+
+        .results-card {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .card-title {
+            font-weight: 600;
+            color: #2c5aa0;
+            margin-bottom: 10px;
+            padding-bottom: 5px;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .detail-row:last-child {
+            border-bottom: none;
+            font-weight: 600;
+            background: #f8f9fa;
+            margin: 10px -15px -15px -15px;
+            padding: 12px 15px;
+            border-radius: 0 0 8px 8px;
+        }
+
+        .schedule-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        .schedule-table th {
+            background: #2c5aa0;
+            color: white;
+            padding: 10px 8px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 12px;
+        }
+
+        .schedule-table td {
+            padding: 10px 8px;
+            text-align: center;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .schedule-table tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+
+        .total-row {
+            background: #2c5aa0 !important;
+            color: white;
+            font-weight: 600;
+        }
+
+        .export-section {
+            padding: 20px;
+            text-align: center;
+        }
+
+        .export-btn {
+            background: #28a745;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            margin: 5px;
+            min-width: 120px;
+        }
+
+        .export-btn:hover {
+            background: #218838;
+        }
+
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            border: 1px solid #c3e6cb;
+            display: none;
+        }
+
+        @media (max-width: 480px) {
+            .schedule-table {
+                font-size: 12px;
+            }
+            
+            .schedule-table th, .schedule-table td {
+                padding: 6px 4px;
+            }
+            
+            .modal-content {
+                margin: 10% auto;
+                width: 95%;
+            }
+        }
+
+        @media print {
+            body {
+                background: white;
+            }
+            
+            .container {
+                box-shadow: none;
+            }
+            
+            .form-section, .export-section, .calculate-btn {
+                display: none;
+            }
+            
+            .results-section {
+                display: block !important;
+                background: white;
+                padding: 0;
+                margin: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>FAYSAL ISLAMIC CAR FINANCE</h1>
+            <p>Installment Calculator</p>
+        </div>
+        
+        <div class="form-section">
+            <div class="form-group">
+                <label for="vehicleSelect">Select Vehicle</label>
+                <div class="vehicle-selector">
+                    <select id="vehicleSelect">
+                        <option value="">Choose a vehicle</option>
+                    </select>
+                    <button class="add-vehicle-btn" onclick="openAddVehicleModal()">
+                        ➕ Add New Vehicle
+                    </button>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="yearSelect">Model Year</label>
+                <select id="yearSelect">
+                    <option value="">Select Year</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="downPayment">Down Payment (%)</label>
+                <input type="number" id="downPayment" placeholder="30" min="10" max="90" step="0.1" value="30">
+            </div>
+
+            <div class="form-group">
+                <label for="tenure">Tenure (Years)</label>
+                <select id="tenure">
+                    <option value="1">1 Year</option>
+                    <option value="2">2 Years</option>
+                    <option value="3">3 Years</option>
+                    <option value="4">4 Years</option>
+                    <option value="5" selected>5 Years</option>
+                    <option value="6">6 Years</option>
+                    <option value="7">7 Years</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="kibor">KIBOR Rate (%)</label>
+                <input type="number" id="kibor" placeholder="11.29" step="0.01" value="12.33">
+            </div>
+
+            <div class="form-group">
+                <label for="margin">Bank Margin (%)</label>
+                <input type="number" id="margin" placeholder="5.00" step="0.01" value="4.00">
+            </div>
+
+            <button class="calculate-btn" id="calculateBtn" disabled>Calculate</button>
+        </div>
+        
+        <div class="results-section" id="resultsSection">
+            <div class="results-card">
+                <div class="card-title">Selected Vehicle Details</div>
+                <div id="vehicleDetails"></div>
+            </div>
+
+            <div class="results-card">
+                <div class="card-title">Up-Front Payments</div>
+                <div class="detail-row">
+                    <span>Down Payment</span>
+                    <span id="upfrontDown">Rs. 0</span>
+                </div>
+                <div class="detail-row">
+                    <span>1st Year Takaful</span>
+                    <span id="upfrontTakaful">Rs. 0</span>
+                </div>
+                <div class="detail-row">
+                    <span>Processing Fee</span>
+                    <span id="upfrontProcessing">Rs. 12,000</span>
+                </div>
+                <div class="detail-row">
+                    <span>Tracker Management Fee</span>
+                    <span id="upfrontTracker">Rs. 22,000</span>
+                </div>
+                <div class="detail-row">
+                    <span><strong>Total Payable</strong></span>
+                    <span id="totalUpfront"><strong>Rs. 0</strong></span>
+                </div>
+            </div>
+
+            <div class="results-card">
+                <div class="card-title">Repayment Schedule</div>
+                <table class="schedule-table">
+                    <thead>
+                        <tr>
+                            <th>Year</th>
+                            <th>Monthly<br>Installment</th>
+                            <th>Monthly<br>Supp. Rental</th>
+                            <th>Monthly<br>Add. Rental</th>
+                            <th>Total Monthly<br>Payment</th>
+                        </tr>
+                    </thead>
+                    <tbody id="scheduleBody">
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="export-section">
+                <button class="export-btn" onclick="exportToPDF()">📄 Export PDF</button>
+                <button class="export-btn" onclick="exportToImage()">🖼️ Export Image</button>
+                <button class="export-btn" onclick="window.print()">🖨️ Print</button>
+            </div>
+        </div>
+
+        <!-- Add Vehicle Modal -->
+        <div id="addVehicleModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Add New Vehicle</h3>
+                    <span class="close" onclick="closeAddVehicleModal()">&times;</span>
+                </div>
+                
+                <div class="success-message" id="successMessage">
+                    Vehicle added successfully! ✅
+                </div>
+
+                <form id="addVehicleForm">
+                    <div class="modal-form-group">
+                        <label for="newVehicleName">Vehicle Name *</label>
+                        <input type="text" id="newVehicleName" placeholder="e.g., Toyota Camry" required>
+                    </div>
+                    
+                    <div class="modal-form-group">
+                        <label for="newVehiclePrice">Base Price (Rs.) *</label>
+                        <input type="number" id="newVehiclePrice" placeholder="e.g., 5500000" min="100000" step="1000" required>
+                    </div>
+                    
+                    <div class="modal-form-group">
+                        <label for="newVehicleCategory">Category</label>
+                        <select id="newVehicleCategory">
+                            <option value="🚗">Car (🚗)</option>
+                            <option value="🚙">SUV (🚙)</option>
+                            <option value="🛻">Truck (🛻)</option>
+                            <option value="🏍️">Motorcycle (🏍️)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="modal-buttons">
+                        <button type="button" class="btn btn-secondary" onclick="closeAddVehicleModal()">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Add Vehicle</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Vehicle data with ability to add new vehicles
+        let vehicleData = {
+            "Suzuki Alto": { basePrice: 2331000, image: "🚗" },
+            "Suzuki Cultus": { basePrice: 2799000, image: "🚗" },
+            "Suzuki WagonR": { basePrice: 3099000, image: "🚗" },
+            "KIA Picanto": { basePrice: 2899000, image: "🚗" },
+            "KIA Stonic": { basePrice: 2300000, image: "🚗" },
+            "Toyota Corolla": { basePrice: 4599000, image: "🚙" },
+            "Toyota Yaris": { basePrice: 3949000, image: "🚙" },
+            "Honda City": { basePrice: 4349000, image: "🚗" },
+            "Honda Civic": { basePrice: 7199000, image: "🚗" },
+            "Honda BR-V": { basePrice: 4999000, image: "🚙" }
+        };
+
+        let selectedVehicle = null;
+        let selectedYear = null;
+        let vehiclePrice = 0;
+
+        // Initialize dropdowns
+        function initializeDropdowns() {
+            populateVehicleDropdown();
+            populateYearDropdown();
+        }
+
+        function populateVehicleDropdown() {
+            const vehicleSelect = document.getElementById('vehicleSelect');
+            // Clear existing options except the first one
+            while (vehicleSelect.children.length > 1) {
+                vehicleSelect.removeChild(vehicleSelect.lastChild);
+            }
+
+            // Sort vehicles alphabetically and populate
+            const sortedVehicles = Object.keys(vehicleData).sort();
+            sortedVehicles.forEach(vehicle => {
+                const option = document.createElement('option');
+                option.value = vehicle;
+                option.textContent = `${vehicleData[vehicle].image} ${vehicle}`;
+                vehicleSelect.appendChild(option);
+            });
+        }
+
+        function populateYearDropdown() {
+            const yearSelect = document.getElementById('yearSelect');
+            // Populate year dropdown (2017-2025)
+            for (let year = 2025; year >= 2017; year--) {
+                const option = document.createElement('option');
+                option.value = year;
+                option.textContent = year;
+                yearSelect.appendChild(option);
+            }
+        }
+
+        // Modal functions
+        function openAddVehicleModal() {
+            document.getElementById('addVehicleModal').style.display = 'block';
+            document.getElementById('successMessage').style.display = 'none';
+            document.getElementById('addVehicleForm').reset();
+        }
+
+        function closeAddVehicleModal() {
+            document.getElementById('addVehicleModal').style.display = 'none';
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('addVehicleModal');
+            if (event.target === modal) {
+                closeAddVehicleModal();
+            }
+        }
+
+        // Add vehicle form submission
+        document.getElementById('addVehicleForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const vehicleName = document.getElementById('newVehicleName').value.trim();
+            const vehiclePrice = parseInt(document.getElementById('newVehiclePrice').value);
+            const vehicleCategory = document.getElementById('newVehicleCategory').value;
+
+            // Validate inputs
+            if (!vehicleName || !vehiclePrice || vehiclePrice < 100000) {
+                alert('Please enter valid vehicle name and price (minimum Rs. 100,000)');
+                return;
+            }
+
+            // Check if vehicle already exists
+            if (vehicleData[vehicleName]) {
+                alert('This vehicle already exists in the list!');
+                return;
+            }
+
+            // Add new vehicle to data
+            vehicleData[vehicleName] = {
+                basePrice: vehiclePrice,
+                image: vehicleCategory
+            };
+
+            // Refresh vehicle dropdown
+            populateVehicleDropdown();
+
+            // Show success message
+            document.getElementById('successMessage').style.display = 'block';
+            
+            // Auto-select the newly added vehicle
+            document.getElementById('vehicleSelect').value = vehicleName;
+            selectedVehicle = vehicleName;
+            updateVehiclePrice();
+            updateCalculateButton();
+
+            // Close modal after 2 seconds
+            setTimeout(() => {
+                closeAddVehicleModal();
+            }, 2000);
+        });
+
+        // Vehicle selection handler
+        document.getElementById('vehicleSelect').addEventListener('change', function() {
+            selectedVehicle = this.value;
+            updateVehiclePrice();
+            updateCalculateButton();
+        });
+
+        // Year selection handler
+        document.getElementById('yearSelect').addEventListener('change', function() {
+            selectedYear = parseInt(this.value);
+            updateVehiclePrice();
+            updateCalculateButton();
+        });
+
+        // Update vehicle price based on year
+        function updateVehiclePrice() {
+            if (selectedVehicle && selectedYear) {
+                const basePrice = vehicleData[selectedVehicle].basePrice;
+                // Apply year-based pricing (newer = more expensive)
+                const yearMultiplier = 1 + (selectedYear - 2017) * 0.02; // 2% per year
+                vehiclePrice = Math.round(basePrice * yearMultiplier);
+            }
+        }
+
+        // Form validation
+        function updateCalculateButton() {
+            const hasVehicle = selectedVehicle && selectedYear;
+            const hasDownPayment = document.getElementById('downPayment').value;
+            
+            document.getElementById('calculateBtn').disabled = !(hasVehicle && hasDownPayment);
+        }
+
+        // Add event listeners
+        document.getElementById('downPayment').addEventListener('input', updateCalculateButton);
+        document.getElementById('kibor').addEventListener('input', updateCalculateButton);
+        document.getElementById('margin').addEventListener('input', updateCalculateButton);
+
+        // Calculate financing
+        document.getElementById('calculateBtn').addEventListener('click', function() {
+            const downPaymentPercent = parseFloat(document.getElementById('downPayment').value);
+            const tenureYears = parseInt(document.getElementById('tenure').value);
+            const kibor = parseFloat(document.getElementById('kibor').value) || 12.33;
+            const margin = parseFloat(document.getElementById('margin').value) || 4.00;
+
+            // Financial parameters
+            const pricingRate = kibor + margin;
+            const takafulRate = 1.50;
+            const processingFee = 12000;
+            const trackerManagementFee = 22000;
+            const monthlyTrackerFee = 1500;
+
+            // Calculations
+            const downPaymentAmount = vehiclePrice * (downPaymentPercent / 100);
+            const financeAmount = vehiclePrice - downPaymentAmount;
+            const firstYearTakaful = vehiclePrice * (takafulRate / 100);
+
+            // Monthly installment calculation
+            const monthlyRate = pricingRate / 100 / 12;
+            const totalMonths = tenureYears * 12;
+            const monthlyInstallment = (financeAmount * monthlyRate * Math.pow(1 + monthlyRate, totalMonths)) / 
+                                     (Math.pow(1 + monthlyRate, totalMonths) - 1);
+
+            // Display results
+            displayResults({
+                vehiclePrice,
+                downPaymentAmount,
+                financeAmount,
+                monthlyInstallment,
+                firstYearTakaful,
+                processingFee,
+                trackerManagementFee,
+                monthlyTrackerFee,
+                tenureYears,
+                takafulRate
+            });
+        });
+
+        function displayResults(data) {
+            // Vehicle details
+            document.getElementById('vehicleDetails').innerHTML = `
+                <div class="detail-row">
+                    <span>Make & Model:</span>
+                    <span>${selectedVehicle} ${selectedYear}</span>
+                </div>
+                <div class="detail-row">
+                    <span>Total Cost:</span>
+                    <span>Rs. ${data.vehiclePrice.toLocaleString()}</span>
+                </div>
+                <div class="detail-row">
+                    <span>Finance Amount:</span>
+                    <span>Rs. ${data.financeAmount.toLocaleString()}</span>
+                </div>
+                <div class="detail-row">
+                    <span>Tenure:</span>
+                    <span>${data.tenureYears} Years</span>
+                </div>
+                <div class="detail-row">
+                    <span>Facility Type:</span>
+                    <span>Diminishing Musharakah</span>
+                </div>
+            `;
+
+            // Up-front payments
+            const totalUpfront = data.downPaymentAmount + data.firstYearTakaful + data.processingFee + data.trackerManagementFee;
+            
+            document.getElementById('upfrontDown').textContent = `Rs. ${Math.round(data.downPaymentAmount).toLocaleString()}`;
+            document.getElementById('upfrontTakaful').textContent = `Rs. ${Math.round(data.firstYearTakaful).toLocaleString()}`;
+            document.getElementById('upfrontProcessing').textContent = `Rs. ${data.processingFee.toLocaleString()}`;
+            document.getElementById('upfrontTracker').textContent = `Rs. ${data.trackerManagementFee.toLocaleString()}`;
+            document.getElementById('totalUpfront').textContent = `Rs. ${Math.round(totalUpfront).toLocaleString()}`;
+
+            // Generate schedule
+            generateSchedule(data);
+
+            // Show results
+            document.getElementById('resultsSection').style.display = 'block';
+            document.getElementById('resultsSection').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function generateSchedule(data) {
+            const scheduleBody = document.getElementById('scheduleBody');
+            let totalInstallments = 0;
+            let totalSupplementary = 0;
+            let totalAdditional = 0;
+            let totalPayments = 0;
+
+            let rows = '';
+
+            for (let year = 1; year <= data.tenureYears; year++) {
+                // Supplementary rental decreases each year
+                const remainingBalance = data.financeAmount * (1 - (year - 1) / data.tenureYears);
+                const supplementaryRental = year <= 4 ? 
+                    Math.max(0, remainingBalance * (data.takafulRate / 100) / 12) : 0;
+
+                const yearlyInstallment = data.monthlyInstallment * 12;
+                const yearlySupplementary = supplementaryRental * 12;
+                const yearlyAdditional = data.monthlyTrackerFee * 12;
+                const totalMonthlyPayment = data.monthlyInstallment + supplementaryRental + data.monthlyTrackerFee;
+
+                rows += `
+                    <tr>
+                        <td>${year}</td>
+                        <td>Rs. ${Math.round(data.monthlyInstallment).toLocaleString()}</td>
+                        <td>Rs. ${Math.round(supplementaryRental).toLocaleString()}</td>
+                        <td>Rs. ${data.monthlyTrackerFee.toLocaleString()}</td>
+                        <td>Rs. ${Math.round(totalMonthlyPayment).toLocaleString()}</td>
+                    </tr>
+                `;
+
+                totalInstallments += yearlyInstallment;
+                totalSupplementary += yearlySupplementary;
+                totalAdditional += yearlyAdditional;
+                totalPayments += totalMonthlyPayment * 12;
+            }
+
+            // Total row
+            rows += `
+                <tr class="total-row">
+                    <td><strong>TOTAL</strong></td>
+                    <td><strong>Rs. ${Math.round(totalInstallments).toLocaleString()}</strong></td>
+                    <td><strong>Rs. ${Math.round(totalSupplementary).toLocaleString()}</strong></td>
+                    <td><strong>Rs. ${Math.round(totalAdditional).toLocaleString()}</strong></td>
+                    <td><strong>Rs. ${Math.round(totalPayments).toLocaleString()}</strong></td>
+                </tr>
+            `;
+
+            scheduleBody.innerHTML = rows;
+        }
+
+        // Export functions
+        function exportToPDF() {
+            window.print();
+        }
+
+        function exportToImage() {
+            alert('Image export functionality would be implemented using Canvas API in a full application');
+        }
+
+        // Initialize app
+        initializeDropdowns();
+    </script>
+</body>
+</html>
